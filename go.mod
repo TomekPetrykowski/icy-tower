@@ -2,7 +2,10 @@ module github.com/TomekPetrykowski/icy-tower
 
 go 1.26.2
 
-require github.com/gen2brain/raylib-go/raylib v0.60.0
+require (
+	github.com/chewxy/math32 v1.11.2
+	github.com/gen2brain/raylib-go/raylib v0.60.0
+)
 
 require (
 	github.com/ebitengine/purego v0.10.0 // indirect
