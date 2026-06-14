@@ -3,9 +3,10 @@
 This is my attempt of recreating my favourite childhood game - Icy Tower.
 
 ## Development dependencies
+
 - `golangci-lint` for linting
 - `air` for hot reloading
 
-
 ## Rules:
-![noai](./assets/noai.png)
+
+![noai](./assets/noai.jpg)
