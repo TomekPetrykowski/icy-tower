@@ -1,0 +1,67 @@
+version: "2"
+
+issues:
+  max-same-issues: 50
+
+formatters:
+  enable:
+    - goimports
+    - golines
+    - gofmt
+
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/TomekPetrykowski/icy-tower
+
+    golines:
+      max-len: 120
+
+    gofmt:
+      simplify: true
+      rewrite-rules:
+        - pattern: interface{}
+          replacement: any
+        - pattern: a[b:len(a)]
+          replacement: a[b:]
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+    - errorlint
+    - unconvert
+    - nolintlint
+    - revive
+    - copyloopvar
+    - dupl
+
+  settings:
+    errcheck:
+      check-type-assertions: true
+
+    govet:
+      enable-all: false
+      disable:
+        - fieldalignment # too strict for games
+
+    nolintlint:
+      allow-no-explanation: [golines]
+      require-explanation: true
+      require-specific: true
+
+  exclusions:
+    presets:
+      - std-error-handling
+      - common-false-positives
+
+    rules:
+      - source: "TODO"
+        linters: [godot]
+
+      - path: '_test\.go'
+        linters:
+          - errcheck
+          - gosec

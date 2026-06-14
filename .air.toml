@@ -1,0 +1,12 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/game ."
+bin = "tmp/game"
+delay = 1000
+include_ext = ["go"]
+exclude_dir = ["tmp", "vendor"]
+
+[run]
+cmd = "./tmp/game"
