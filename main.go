@@ -10,90 +10,53 @@ import (
 
 func main() {
 	// Settings
-	// rl.SetConfigFlags(rl.FlagWindowResizable)
-	rl.InitWindow(ScreenWidth, ScreenHeight, "Hello World!")
+	rl.InitWindow(ScreenWidth, ScreenHeight, "Icy Tower Remake v0.0.1")
 	defer rl.CloseWindow()
 	rl.SetTargetFPS(TargetFps)
 
-	// Objects
-	player := Player{
-		Pos:      rl.NewVector2(ScreenWidth/2, ScreenHeight-PlayerHeight),
-		Velocity: rl.NewVector2(0, 0),
-		Standing: true,
-	}
-
-	platforms := []Platform{
-		{
-			Pos:   rl.NewVector2(100, ScreenHeight-150),
-			Size:  rl.NewVector2(300, 30),
-			Color: rl.Red,
-		},
-		{
-			Pos:   rl.NewVector2(700, ScreenHeight-300),
-			Size:  rl.NewVector2(200, 30),
-			Color: rl.Red,
-		},
-		{
-			Pos:   rl.NewVector2(300, ScreenHeight-450),
-			Size:  rl.NewVector2(150, 30),
-			Color: rl.Red,
-		},
-	}
-
-	var accel float32 = 5000
-	var friction float32 = 4.5
-	var gravity float32 = 9.7
-	var stopSpeed = accel / 2
+	state := NewGameState()
 
 	for !rl.WindowShouldClose() {
 		dt := rl.GetFrameTime()
 
 		// Events ---------------------------------------------------------------- //
 		if rl.IsKeyDown(rl.KeyD) {
-			player.Velocity.X += accel * dt
+			state.player.vel.X += state.player.acceleration * dt
 		}
 		if rl.IsKeyDown(rl.KeyA) {
-			player.Velocity.X -= accel * dt
+			state.player.vel.X -= state.player.acceleration * dt
 		}
-		if rl.IsKeyPressed(rl.KeySpace) && player.Standing {
-			player.Velocity.Y = accel * -10 * dt
-			player.Standing = false
+		if rl.IsKeyPressed(rl.KeySpace) && state.player.standing {
+			// TODO: Clean this up, this is initial jumping, it depends on horizontal velocity
+			state.player.vel.Y = (-state.player.jumpForce - (math32.Abs(state.player.vel.X)/dt)/4) * dt
+			state.player.standing = false
 		}
 
 		// Update ---------------------------------------------------------------- //
-
-		player.Velocity.X -= player.Velocity.X * friction * dt
-		if !player.Standing {
-			player.Velocity.Y += 200 * gravity * dt
-			if player.Velocity.Y >= 0 {
-				player.Velocity.Y += 100 * gravity * dt
-			}
-		}
-		if math32.Abs(player.Velocity.X) < stopSpeed*dt {
-			player.Velocity.X = 0
-		}
-
-		for _, platform := range platforms {
-			if platform.CollideWith(&player) {
-				player.Pos.Y = platform.Pos.Y - PlayerHeight
-				player.Standing = true
+		for _, platform := range state.platforms {
+			if platform.IsCollidingWith(state.player) {
+				state.player.standing = true
+				state.player.pos.Y = platform.Pos.Y - PlayerHeight
 				break
 			}
-			player.Standing = false
+			state.player.standing = false
 		}
-		player.Update(dt)
+
+		state.player.Update(state, dt)
 
 		// Drawing --------------------------------------------------------------- //
 		rl.BeginDrawing()
 
 		rl.ClearBackground(rl.Black)
-		player.Draw()
-		for _, platform := range platforms {
+		state.player.Draw()
+		for _, platform := range state.platforms {
 			platform.Draw()
 		}
-		rl.DrawText(fmt.Sprintf("Vel: %.4f, %.4f", player.Velocity.X, player.Velocity.Y), 10, 10, 21, rl.White)
-		rl.DrawText(fmt.Sprintf("Pos: %.4f, %.4f", player.Pos.X, player.Pos.Y), 10, 40, 21, rl.White)
-		rl.DrawText(fmt.Sprintf("Standing: %v", player.Standing), 10, 70, 21, rl.White)
+		rl.DrawText(fmt.Sprintf("Vel: %.4f, %.4f", state.player.vel.X, state.player.vel.Y), 10, 10, 21, rl.White)
+		rl.DrawText(fmt.Sprintf("Pos: %.4f, %.4f", state.player.pos.X, state.player.pos.Y), 10, 40, 21, rl.White)
+		rl.DrawText(fmt.Sprintf("Standing: %v", state.player.standing), 10, 70, 21, rl.White)
+		rl.DrawText(fmt.Sprintf("Jump force: %v", state.player.jumpForce), 10, 100, 21, rl.White)
+		rl.DrawText(fmt.Sprintf("Gravity: %v", state.gravity), 10, 130, 21, rl.White)
 
 		rl.EndDrawing()
 	}
