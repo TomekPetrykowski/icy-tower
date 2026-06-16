@@ -12,7 +12,8 @@ func (p *Player) Draw() {
 	rl.DrawRectangle(int32(p.Pos.X), int32(p.Pos.Y), PlayerWidth, PlayerHeight, rl.Green)
 }
 
-func (p *Player) Update() {
+func (p *Player) Update(dt float32) {
+	p.Pos = rl.Vector2Add(p.Pos, rl.Vector2Scale(p.Velocity, dt))
 
 	if p.Pos.Y >= ScreenHeight-PlayerHeight {
 		p.Pos.Y = ScreenHeight - PlayerHeight
@@ -26,13 +27,13 @@ func (p *Player) Update() {
 	if p.Pos.X < 0 {
 		p.Pos.X = 0
 		p.Velocity.X *= -1.5
-		p.Velocity.Y *= 1.5
+		p.Velocity.Y *= 1.2
 	}
 
 	if p.Pos.X > ScreenWidth-PlayerWidth {
 		p.Pos.X = ScreenWidth - PlayerWidth
 		p.Velocity.X *= -1.5
-		p.Velocity.Y *= 1.5
+		p.Velocity.Y *= 1.2
 	}
 
 }

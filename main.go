@@ -13,7 +13,7 @@ func main() {
 	// rl.SetConfigFlags(rl.FlagWindowResizable)
 	rl.InitWindow(ScreenWidth, ScreenHeight, "Hello World!")
 	defer rl.CloseWindow()
-	rl.SetTargetFPS(60)
+	rl.SetTargetFPS(TargetFps)
 
 	// Objects
 	player := Player{
@@ -24,8 +24,18 @@ func main() {
 
 	platforms := []Platform{
 		{
-			Pos:   rl.NewVector2(100, ScreenHeight-200),
+			Pos:   rl.NewVector2(100, ScreenHeight-150),
 			Size:  rl.NewVector2(300, 30),
+			Color: rl.Red,
+		},
+		{
+			Pos:   rl.NewVector2(700, ScreenHeight-300),
+			Size:  rl.NewVector2(200, 30),
+			Color: rl.Red,
+		},
+		{
+			Pos:   rl.NewVector2(300, ScreenHeight-450),
+			Size:  rl.NewVector2(150, 30),
 			Color: rl.Red,
 		},
 	}
@@ -55,17 +65,23 @@ func main() {
 		player.Velocity.X -= player.Velocity.X * friction * dt
 		if !player.Standing {
 			player.Velocity.Y += 200 * gravity * dt
+			if player.Velocity.Y >= 0 {
+				player.Velocity.Y += 100 * gravity * dt
+			}
 		}
 		if math32.Abs(player.Velocity.X) < stopSpeed*dt {
 			player.Velocity.X = 0
 		}
 
-		player.Pos = rl.Vector2Add(player.Pos, rl.Vector2Scale(player.Velocity, dt))
-
 		for _, platform := range platforms {
-			platform.CollideWith(&player)
+			if platform.CollideWith(&player) {
+				player.Pos.Y = platform.Pos.Y - PlayerHeight
+				player.Standing = true
+				break
+			}
+			player.Standing = false
 		}
-		player.Update()
+		player.Update(dt)
 
 		// Drawing --------------------------------------------------------------- //
 		rl.BeginDrawing()
@@ -75,7 +91,9 @@ func main() {
 		for _, platform := range platforms {
 			platform.Draw()
 		}
-		rl.DrawText(fmt.Sprintf("Vel: %.2f, %.2f", player.Velocity.X, player.Velocity.Y), 10, 10, 21, rl.White)
+		rl.DrawText(fmt.Sprintf("Vel: %.4f, %.4f", player.Velocity.X, player.Velocity.Y), 10, 10, 21, rl.White)
+		rl.DrawText(fmt.Sprintf("Pos: %.4f, %.4f", player.Pos.X, player.Pos.Y), 10, 40, 21, rl.White)
+		rl.DrawText(fmt.Sprintf("Standing: %v", player.Standing), 10, 70, 21, rl.White)
 
 		rl.EndDrawing()
 	}
