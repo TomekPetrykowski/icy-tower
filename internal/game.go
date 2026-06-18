@@ -1,5 +1,5 @@
-// This package contains game loop for icy-tower game
-package main
+// Package internal of icy tower game
+package internal
 
 import (
 	"fmt"
@@ -8,13 +8,26 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func main() {
-	// Settings
-	rl.InitWindow(ScreenWidth, ScreenHeight, "Icy Tower Remake v0.0.1")
-	defer rl.CloseWindow()
-	rl.SetTargetFPS(TargetFps)
+// Game is struct that holds entire game
+type Game struct {
+	state *gameState
+}
 
-	state := NewGameState()
+// NewGame creates entire game
+func NewGame() *Game {
+	return &Game{
+		state: newGameState(),
+	}
+}
+
+// Run runs entire game loop
+func (g *Game) Run() error {
+	// Settings
+	rl.InitWindow(screenWidth, screenHeight, "Icy Tower Remake v0.0.1")
+	defer rl.CloseWindow()
+	rl.SetTargetFPS(targetFps)
+
+	state := newGameState()
 
 	for !rl.WindowShouldClose() {
 		dt := rl.GetFrameTime()
@@ -36,7 +49,7 @@ func main() {
 		for _, platform := range state.platforms {
 			if platform.IsCollidingWith(state.player) {
 				state.player.standing = true
-				state.player.pos.Y = platform.Pos.Y - PlayerHeight
+				state.player.pos.Y = platform.Pos.Y - playerHeight
 				break
 			}
 			state.player.standing = false
@@ -60,4 +73,6 @@ func main() {
 
 		rl.EndDrawing()
 	}
+
+	return nil
 }

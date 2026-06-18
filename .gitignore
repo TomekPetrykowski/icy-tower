@@ -33,3 +33,6 @@ go.work.sum
 
 # Air builds
 tmp/
+
+# Builds
+bin/

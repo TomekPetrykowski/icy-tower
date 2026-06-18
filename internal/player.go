@@ -1,11 +1,11 @@
-package main
+package internal
 
 import (
 	"github.com/chewxy/math32"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-type Player struct {
+type player struct {
 	pos          rl.Vector2
 	vel          rl.Vector2
 	standing     bool
@@ -14,22 +14,22 @@ type Player struct {
 	jumpForce    float32
 }
 
-func NewPlayer() *Player {
-	return &Player{
-		pos:          rl.NewVector2(ScreenWidth/2, ScreenHeight-PlayerHeight),
+func newPlayer() *player {
+	return &player{
+		pos:          rl.NewVector2(screenWidth/2, screenHeight-playerHeight),
 		vel:          rl.NewVector2(0, 0),
 		standing:     true,
-		acceleration: PlayerAcceleration,
-		stopSpeed:    PlayerStopSpeed,
-		jumpForce:    PlayerJumpForce,
+		acceleration: playerAcceleration,
+		stopSpeed:    playerStopSpeed,
+		jumpForce:    playerJumpForce,
 	}
 }
 
-func (p *Player) Draw() {
-	rl.DrawRectangle(int32(p.pos.X), int32(p.pos.Y), PlayerWidth, PlayerHeight, rl.Green)
+func (p *player) Draw() {
+	rl.DrawRectangle(int32(p.pos.X), int32(p.pos.Y), playerWidth, playerHeight, rl.Green)
 }
 
-func (p *Player) Update(state *GameState, dt float32) {
+func (p *player) Update(state *gameState, dt float32) {
 	p.vel.X -= p.vel.X * state.friction * dt
 
 	if !p.standing {
@@ -48,8 +48,8 @@ func (p *Player) Update(state *GameState, dt float32) {
 
 	p.pos = rl.Vector2Add(p.pos, rl.Vector2Scale(p.vel, dt))
 
-	if p.pos.Y >= ScreenHeight-PlayerHeight {
-		p.pos.Y = ScreenHeight - PlayerHeight
+	if p.pos.Y >= screenHeight-playerHeight {
+		p.pos.Y = screenHeight - playerHeight
 		p.standing = true
 	}
 
@@ -59,8 +59,8 @@ func (p *Player) Update(state *GameState, dt float32) {
 		p.vel.Y *= 1.2
 	}
 
-	if p.pos.X > ScreenWidth-PlayerWidth {
-		p.pos.X = ScreenWidth - PlayerWidth
+	if p.pos.X > screenWidth-playerWidth {
+		p.pos.X = screenWidth - playerWidth
 		p.vel.X *= -1.5
 		p.vel.Y *= 1.2
 	}
