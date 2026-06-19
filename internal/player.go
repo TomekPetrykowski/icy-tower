@@ -50,17 +50,18 @@ func (p *player) Update(state *gameState, dt float32) {
 
 	if p.pos.Y >= screenHeight-playerHeight {
 		p.pos.Y = screenHeight - playerHeight
+		p.vel.Y = 0
 		p.standing = true
 	}
 
-	if p.pos.X < 0 {
-		p.pos.X = 0
+	if p.pos.X < float32(screenWidthMargin) {
+		p.pos.X = float32(screenWidthMargin)
 		p.vel.X *= -1.5
 		p.vel.Y *= 1.2
 	}
 
-	if p.pos.X > screenWidth-playerWidth {
-		p.pos.X = screenWidth - playerWidth
+	if p.pos.X > screenWidth-playerWidth-screenWidthMargin {
+		p.pos.X = screenWidth - playerWidth - screenWidthMargin
 		p.vel.X *= -1.5
 		p.vel.Y *= 1.2
 	}
